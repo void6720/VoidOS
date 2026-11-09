@@ -1,0 +1,6 @@
+NAME="VoidOS"
+PRETTY_NAME="VoidOS Linux 1.0 (XFCE)"
+ID=voidos
+VERSION_ID=1.0
+VERSION="1.0 (XFCE)"
+HOME_URL="https://voidos.local/"

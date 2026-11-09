@@ -1,0 +1,56 @@
+#!/bin/sh
+# vpm - VoidOS Package Manager
+#
+# VoidOS's own package manager. A VoidOS-native frontend over the
+# system package backend (apk), giving VoidOS one consistent set of
+# commands regardless of the backend underneath.
+#
+#   vpm install <pkg...>   install packages
+#   vpm remove  <pkg...>   remove packages
+#   vpm update             refresh package indexes
+#   vpm upgrade            upgrade all installed packages
+#   vpm search  <term>     search package names/descriptions
+#   vpm info    <pkg>      show package details
+#   vpm list               list installed packages
+#
+# Backend override (testing on the build host): VPM_APK="apk.static --root <dir>"
+
+VPM_VERSION="1.0.0"
+APK=${VPM_APK:-apk}
+
+usage() {
+    cat <<EOF
+vpm $VPM_VERSION - VoidOS Package Manager
+
+Usage: vpm <command> [arguments]
+
+  install <pkg...>   install packages
+  remove  <pkg...>   remove packages
+  update             refresh package indexes
+  upgrade            upgrade all installed packages
+  search  <term>     search for packages
+  info    <pkg>      show package details
+  list               list installed packages
+  version            show vpm version
+  help               this help
+
+Extra flags are passed through to the backend, e.g.
+  vpm install --no-cache nano
+EOF
+}
+
+cmd=${1:-help}
+[ $# -gt 0 ] && shift
+
+case "$cmd" in
+    install|add)            exec $APK add "$@" ;;
+    remove|del|uninstall)   exec $APK del "$@" ;;
+    update)                 exec $APK update "$@" ;;
+    upgrade)                exec $APK upgrade "$@" ;;
+    search)                 exec $APK search "$@" ;;
+    info|show)              exec $APK info "$@" ;;
+    list|installed)         exec $APK info "$@" ;;
+    version|--version|-v)   echo "vpm $VPM_VERSION (VoidOS Package Manager)" ;;
+    help|--help|-h)         usage ;;
+    *) echo "vpm: unknown command '$cmd'" >&2; usage >&2; exit 1 ;;
+esac

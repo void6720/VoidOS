@@ -1,0 +1,25 @@
+#!/sbin/openrc-run
+# VoidOS boot splash: switches to VT16 and draws /fbsplash.ppm once
+# (busybox fbsplash one-shot mode). The image stays on screen for the
+# rest of the boot until the display manager takes over its own VT.
+description="VoidOS boot splash"
+
+depend() {
+    need devfs
+    before modules hwdrivers
+    keyword -docker -lxc -openvz -prefix -uml -vserver -xenu
+}
+
+start() {
+    [ -e /dev/fb0 ] || return 0
+    [ -e /fbsplash.ppm ] || return 0
+    ebegin "Starting VoidOS boot splash"
+    chvt 16
+    fbsplash -s /fbsplash.ppm -d /dev/fb0 -i /etc/fbsplash.cfg
+    eend 0
+}
+
+stop() {
+    chvt 1
+    return 0
+}
